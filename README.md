@@ -22,5 +22,5 @@ A FastAPI-based backend service that recommends movies using vector similarity a
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/movie-recommender-api.git
-cd movie-recommender-api
+git clone https://github.com/wlvUmar/RecAPI.git
+cd RecAPI
