@@ -1,4 +1,4 @@
-app = "recapi"  
+app = "recapi"
 
 [build]
   dockerfile = "Dockerfile"
@@ -6,20 +6,24 @@ app = "recapi"
 [env]
   PYTHONUNBUFFERED = "1"
 
-[[services]]
+[http_service]
   internal_port = 8080
-  protocol = "tcp"
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
 
-  [[services.ports]]
+  [[http_service.ports]]
     port = 80
     handlers = ["http"]
 
-  [[services.ports]]
+  [[http_service.ports]]
     port = 443
     handlers = ["tls", "http"]
 
-  [[services.tcp_checks]]
+  [[http_service.checks]]
     interval = "15s"
     timeout = "2s"
     grace_period = "10s"
-    restart_limit = 0
+    method = "GET"
+    path = "/docs"

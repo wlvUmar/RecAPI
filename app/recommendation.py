@@ -42,7 +42,7 @@ async def recommend(liked_movie_ids: List[str], db: AsyncSession, limit=10) -> L
             )
             recommendations.append((movie_id, title, release_year, sim))
 
-        recommendations.sort(key=lambda x: x[2], reverse=True)
+        recommendations.sort(key=lambda x: x[3], reverse=True)
         return [{"id": mid, "title": t, "release_year": y} for mid, t,y, _ in recommendations[:limit]]
 
     except Exception:

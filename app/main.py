@@ -18,21 +18,26 @@ app = FastAPI(
     version=settings.VERSION,
 )
 
-
+@app.get("/")
+async def root():
+    return {"message": "Hello, World!"}
+    
 @app.on_event("startup")
 async def startup():
-    if os.path.exists(DB_PATH):
-        return  # DB already exists, skip startup logic
-
+    # Create tables if they don't exist
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
+    # Load and preprocess CSV
     df = pd.read_csv("processed_movies.csv")
-
     for col in ['genres', 'tags', 'actors']:
         df[col] = df[col].apply(parse_stringified_list)
 
     async with AsyncSessionLocal() as session:
+        result = await session.execute(select(DBMovie).limit(1))
+        exists = result.scalar_one_or_none()
+        if exists:
+            return
         for _, row in df.iterrows():
             movie_data = row.to_dict()
             movie_create = MovieCreate(**movie_data)
