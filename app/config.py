@@ -4,22 +4,26 @@ import os
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Movie Recommendation API"
-    PROJECT_DESCRIPTION: str = """
-## Movie Recommendation Microservice
+    PROJECT_DESCRIPTION: str = """Movie Recommendation Microservice
 
-This microservice demonstrates a simple yet effective approach to movie recommendations, built for portfolio showcase.
+    An educational microservice built to demonstrate movie recommendations for portfolio purposes.
 
-Features include:
-- Content-based recommendations using movie metadata and keywords.
-- Neural network embeddings for enhanced recommendation quality.
-- Endpoints for movie search, lookup, creation, and personalized recommendations.
-- Lightweight design focused on educational and demonstration purposes, not production-scale.
+    Features:
+    - Content-based recommendations using metadata and embeddings
+    - User authentication with JWT and movie-like tracking
+    - CRUD endpoints for movies and users
+    - Vector generation via Sentence Transformers
+    - Asynchronous FastAPI + SQLAlchemy stack
+    - Fully tested with Pytest
 
-Built with FastAPI, async SQLAlchemy, and Sentence Transformers for embedding text data.
-"""
+    Note: This project is for learning/demo use only, not production-ready.
+    """
+
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     PG_DB_URL: str = "postgresql+asyncpg://postgres:getout04@localhost:5433/postgres"
+    PG_TEST_URL: str = "postgresql+asyncpg://postgres:getout04@localhost:5433/postgres_test"
+
     SQLITE_DB_URL: str = "sqlite+aiosqlite:///./movies.db"
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "securepass"

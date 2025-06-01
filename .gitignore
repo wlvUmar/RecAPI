@@ -4,3 +4,4 @@ movies.db
 test.py
 dataset.csv
 *.ipynb
+report.html

@@ -3,7 +3,7 @@ from uuid import UUID
 
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -97,7 +97,7 @@ async def get_movie_by_idx(
         result = (await db.execute(query, {"id": str(movie_id)})).first()
         if not result:
             raise HTTPException(status_code=404, detail="Movie not found")
-        return dict(result)
+        return dict(result._mapping)
     except SQLAlchemyError as e:
         logger.exception(f"DB error fetching movie with id {movie_id}")
         raise HTTPException(status_code=500, detail="Database error")

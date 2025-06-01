@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import get_db, UserLikedMovie, Movie
+from app.db import get_db, UserLikedMovie, Movie as MovieTable
 from app.schemas import *
 from app.utils import get_current_admin
 logger = logging.getLogger("uvicorn.error")
@@ -28,6 +28,11 @@ async def add_liked_movie(
     Request body: JSON with movie_id (UUID).
     Returns confirmation message.
     """
+    
+    # Check if movie exists
+    movie = await session.get(MovieTable, movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
     
     exists = await session.get(UserLikedMovie, (user_id, movie_id))
     if exists:

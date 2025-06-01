@@ -22,7 +22,7 @@ class Movie(Base):
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4) 
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     liked_movies = relationship("UserLikedMovie", back_populates="user", cascade="all, delete-orphan")
 
 class UserLikedMovie(Base):
