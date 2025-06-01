@@ -18,7 +18,7 @@ A **FastAPI**-based backend service that recommends movies using vector similari
 
 > Below is a preview of the working `/docs` interface
 
-![Swagger UI Screenshot](Capture.png)
+![Swagger UI Screenshot](Capture.PNG)
 
 ## 📦 Tech Stack
 
