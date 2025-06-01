@@ -20,7 +20,7 @@ async def recommend(liked_movie_ids: List[str], db: AsyncSession, limit=10) -> L
             logger.warning("No liked movies found for IDs: %s", liked_movie_ids)
             return []
 
-        liked_vectors = [vec for _,_, vec in liked_movies if vec is not None]
+        liked_vectors = [movie[2] for movie in liked_movies if movie[2]]
         if not liked_vectors:
             logger.warning("Liked movies have no vectors: %s", liked_movie_ids)
             return []

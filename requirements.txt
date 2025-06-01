@@ -7,4 +7,6 @@ pydantic==2.5.2
 pydantic-settings==2.1.0
 numpy==1.26.2 
 pandas
+python-multipart
+python-jose[cryptography]
 sentence_transformers

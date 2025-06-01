@@ -4,31 +4,30 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI
-
+from sqlalchemy import select
 from app.config import settings
-from app.api import router, vectorize
+from app.api import *
 from app.db import engine, AsyncSessionLocal, Base, Movie as DBMovie
 from app.schemas import Movie, MovieCreate, parse_stringified_list
-
+from app.utils import vectorize
 
 DB_PATH = Path(__file__).resolve().parent.parent / "movies.db"
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
+    description=settings.PROJECT_DESCRIPTION,
     version=settings.VERSION,
 )
 
 @app.get("/")
 async def root():
-    return {"message": "Hello, World!"}
+    return {"code" : 200, "message": "success"}
     
 @app.on_event("startup")
 async def startup():
-    # Create tables if they don't exist
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    # Load and preprocess CSV
     df = pd.read_csv("processed_movies.csv")
     for col in ['genres', 'tags', 'actors']:
         df[col] = df[col].apply(parse_stringified_list)
@@ -54,4 +53,6 @@ async def startup():
             )
             session.add(db_movie)
         await session.commit()
-app.include_router(router, prefix=settings.API_V1_STR) 
+app.include_router(user_router)
+app.include_router(movie_router)
+app.include_router(auth_router) 
