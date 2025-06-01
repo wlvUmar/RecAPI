@@ -58,21 +58,38 @@ async def get_recommendations(
 
 @router.get("/movies", response_model=List[Movie])
 async def list_movies(
-    db:AsyncSession = Depends(get_db)):
+    genre: str | None = Query(None, description="Filter by genre"),
+    year: int | None = Query(None, description="Filter by release year"),
+    tag: str | None = Query(None, description="Filter by tag"),
+    limit: int = Query(50, gt=0, le=100, description="Max number of movies to return"),
+    db: AsyncSession = Depends(get_db)
+):
     """
-    Get all movies in the database.
+    Get movies filtered by genre, year, and tags with a limit.
 
-    Returns a list of movies with full details.
-    Returns 404 if no movies exist.
+    Returns a list of movies matching filters.
+    Returns 404 if no movies found.
     """
-
     try:
-        result = await db.execute(select(MovieTable))
+        query = select(MovieTable)
+
+        if genre:
+            query = query.where(MovieTable.genres.any(genre))
+        if year:
+            query = query.where(MovieTable.release_year == year)
+        if tag:
+            query = query.where(MovieTable.tags.any(tag))
+
+        query = query.limit(limit)
+
+        result = await db.execute(query)
         movies = result.scalars().all()
+
         if not movies:
             raise HTTPException(status_code=404, detail="No movies found.")
+
         return movies
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         logger.exception("Database error while listing movies.")
         raise HTTPException(status_code=500, detail="Database error while listing movies.")
 
