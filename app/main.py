@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI
-from sqlalchemy import select
+from sqlalchemy import select, text
 from app.config import settings
 from app.api import *
 from app.db import engine, AsyncSessionLocal, Base, Movie as DBMovie
@@ -26,6 +26,7 @@ async def root():
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         await conn.run_sync(Base.metadata.create_all)
 
     df = pd.read_csv("processed_movies.csv")
@@ -49,7 +50,7 @@ async def startup():
                 release_year=row['release_year'],
                 director=row['director'],
                 actors=row['actors'],
-                vector=vectorize(movie_create).tolist()
+                vector=vectorize(movie_create)
             )
             session.add(db_movie)
         await session.commit()

@@ -4,6 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
+from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
 
@@ -18,7 +19,7 @@ class Movie(Base):
     release_year = Column(Integer)
     director = Column(String)
     actors = Column(JSON)
-    vector = Column(JSON) 
+    vector = Column(Vector(384)) 
 
 class User(Base):
     __tablename__ = "users"

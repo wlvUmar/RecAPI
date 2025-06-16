@@ -25,16 +25,19 @@ router = APIRouter(
 async def get_recommendations(
     request: MovieRecommendationRequest, 
     db: AsyncSession = Depends(get_db), 
-    limit: int = Query(10, ge=1, le=100)):
+    limit: int = Query(10, ge=1, le=100),
+    by: str = Query("content", description="Recommendation method: content, latest, popularity, user_based, hybrid")):
     """
     Recommend movies based on user liked movies.
 
     - **liked_movie_ids**: List of UUIDs for movies the user liked.
     - **limit**: Max number of recommendations to return (default 10, max 100).
+    - **by**: Recommendation method: "content", "latest", "popularity", "user_based", or "hybrid" (default "content").
 
-    Returns a list of recommended movies similar to liked ones.
+    Returns a list of recommended movies based on the selected method.
     Raises errors for invalid input or no recommendations found.
     """
+
 
     if not isinstance(request.liked_movie_ids, list) or not request.liked_movie_ids:
         raise HTTPException(status_code=400, detail="liked_movie_ids must be a non-empty list.")
@@ -45,7 +48,7 @@ async def get_recommendations(
         logger.warning(f"Invalid UUID in request: {request.liked_movie_ids}")
         raise HTTPException(status_code=422, detail="All liked_movie_ids must be valid UUIDs.")
     try:
-        recommendations = await recommend(valid_ids, db, limit)
+        recommendations = await recommend(valid_ids, db, limit, by=by)
         if not recommendations:
             raise HTTPException(status_code=404, detail="No recommendations found for provided movies.")
         return recommendations
@@ -162,7 +165,7 @@ async def create_movie(
             raise HTTPException(status_code=400, detail="Title and description are required.")
         
         vector = vectorize(movie)
-        db_movie = MovieTable(**movie.model_dump(), vector=vector.tolist())
+        db_movie = MovieTable(**movie.model_dump(), vector=vector)
         db.add(db_movie)
         await db.commit()
         await db.refresh(db_movie)
